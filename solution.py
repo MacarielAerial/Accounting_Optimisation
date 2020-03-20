@@ -53,11 +53,25 @@ class Optimisation:
 						self.quantity_a.append(0)
 						self.quantity_b.append(0)
 						self.profit.append(0)
+
+	def result_display(self):
+		print('*'*10 + 'The highest level of profit is:' + '*'*10)
 		print(self.best_profit)
-		print(self.best_params)
+		print('The optimal number of factory is:')
+		print(self.best_params[0])
+		print('The optimal price level for model A is:')
+		print(self.best_params[1])
+		print('The optimal price level for model B is:')
+		print(self.best_params[2])
+		print('The corresponding demand level for model A is:')
+		print(self.best_params[3])
+		print('The corresponding demand level for model B is;')
+		print(self.best_params[4])
+		print('*'*10 + '*'*len('The highest level of profit is:') + '*'*10)
 
 	def exec(self):
 		self.grid_search()
+		self.result_display()
 
 
 if __name__ == '__main__':
