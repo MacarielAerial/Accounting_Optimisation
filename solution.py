@@ -3,6 +3,7 @@ The script provides the solution to AM16 SPR20 Financial Reporting Analytics Gro
 '''
 
 # Import libraries
+import os
 import numpy as np
 import pandas as pd
 import math
@@ -100,19 +101,23 @@ class Optimisation:
 
 	def result_display(self):
 		'''Display optimal opearting parameters and the consequent profit'''
-		print('*'*10 + 'The highest level of profit is:' + '*'*10)
-		print(self.best_profit)
-		print('The optimal number of factory is:')
-		print(self.best_params[0])
-		print('The optimal price level for model A is:')
-		print(self.best_params[1])
-		print('The optimal price level for model B is:')
-		print(self.best_params[2])
-		print('The corresponding demand level for model A is:')
-		print(self.best_params[3])
-		print('The corresponding demand level for model B is;')
-		print(self.best_params[4])
-		print('*'*10 + '*'*len('The highest level of profit is:') + '*'*10)
+		text_file_name = 'Text_Output.txt'
+		if os.path.exists(text_file_name) and not self.fixed_vc:
+			os.remove(text_file_name)
+		with open(text_file_name, 'a+') as f:
+			f.write('*'*10 + 'The highest level of profit is:' + '*'*10 + '\n')
+			f.write(str(self.best_profit) + '\n')
+			f.write('The optimal number of factory is:\n')
+			f.write(str(self.best_params[0]) + '\n')
+			f.write('The optimal price level for model A is:\n')
+			f.write(str(self.best_params[1]) + '\n')
+			f.write('The optimal price level for model B is:\n')
+			f.write(str(self.best_params[2]) + '\n')
+			f.write('The corresponding demand level for model A is:\n')
+			f.write(str(self.best_params[3]) + '\n')
+			f.write('The corresponding demand level for model B is;\n')
+			f.write(str(self.best_params[4]) + '\n')
+			f.write('*'*10 + '*'*len('The highest level of profit is:') + '*'*10 + '\n')
 
 	def data_visualisation(self):
 		'''Visualise the relationship between operating profit and prices of both models'''
