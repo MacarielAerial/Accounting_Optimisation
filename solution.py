@@ -23,18 +23,21 @@ class Optimisation:
 	'''
 	Module to solve the embedded optimisation problem
 	'''
-	def __init__(self, capacity_one, fixed_cost, price_a, price_b, factory_number):
+	def __init__(self, capacity_one, fixed_cost, price_a, price_b, factory_number, fixed_vc):
 		'''Initiate variables of the model'''
 		self.capacity_one, self.fixed_cost = capacity_one, fixed_cost
 		self.price_a, self.price_b, self.factory_number = price_a, price_b, factory_number
+		self.fixed_vc = fixed_vc
 		self.best_params = [0, 0, 0, 0, 0]
 		self.profit = []
 		self.current_profit = 0
 		self.best_profit = 0
 		self.quantity_a = []
 		self.current_quantity_a = 0
+		self.current_vc_a = 0
 		self.quantity_b = []
 		self.current_quantity_b = 0
+		self.current_vc_b = 0
 		self.price_a_history = []
 		self.price_b_history = []
 		self.capacity_history = []
@@ -49,9 +52,37 @@ class Optimisation:
 			for i_2 in range(len(price_a)):
 				for i_3 in range(len(price_b)):
 					self.current_quantity_a = (1000000 - 1000000/(1 + math.exp(-(1/15000)*(price_a[i_2]-50000))))
+					self.current_vc_a = (56000 - 5600/(1 + math.exp(1-(1/10000)*(self.current_quantity_a - 50000))))
 					self.current_quantity_b = (1000000 - 1000000/(1 + math.exp(-(1/15000)*(price_b[i_3]-40000))))
+					self.current_vc_b = (35000 - 3500/(1 + math.exp(-(1/20000)*(self.current_quantity_b - 100000))))
 					if self.current_quantity_a + self.current_quantity_b <= factory_number[i_1] * self.capacity_one:
-						self.current_profit = self.current_quantity_a*price_a[i_2] + self.current_quantity_b*price_b[i_3] - (56000 - 5600/(1 + math.exp(1-(1/10000)*(self.current_quantity_a - 50000))))*self.current_quantity_a - (35000 - 3500/(1 + math.exp(-(1/20000)*(self.current_quantity_b - 100000))))*self.current_quantity_b - 2000000000*factory_number[i_1]
+						self.current_profit = self.current_quantity_a*price_a[i_2] + self.current_quantity_b*price_b[i_3] - self.current_vc_a*self.current_quantity_a - self.current_vc_b*self.current_quantity_b - 2000000000*factory_number[i_1]
+						self.quantity_a.append(self.current_quantity_a)
+						self.quantity_b.append(self.current_quantity_b)
+						self.profit.append(self.current_profit)
+						if self.current_profit == max(self.profit):
+							self.best_params = [factory_number[i_1], price_a[i_2], price_b[i_3], self.current_quantity_a, self.current_quantity_b]
+							self.best_profit = self.current_profit
+					else:
+						self.quantity_a.append(0)
+						self.quantity_b.append(0)
+						self.profit.append(0)
+					self.capacity_history.append(factory_number[i_1])
+					self.price_a_history.append(self.price_a[i_2])
+					self.price_b_history.append(self.price_b[i_3])
+		self.df = pd.DataFrame({'Price_Model_A':self.price_a_history, 'Price_Model_B':self.price_b_history, 'Profit':self.profit, 'Capacity':self.capacity_history}, dtype = float)
+
+	def grid_search_fixed_vc(self):
+		'''Calculate all viable solutions given ranges of input'''
+		for i_1 in range(len(factory_number)):
+			for i_2 in range(len(price_a)):
+				for i_3 in range(len(price_b)):
+					self.current_quantity_a = (1000000 - 1000000/(1 + math.exp(-(1/15000)*(price_a[i_2]-50000))))
+					self.current_vc_a = 56000
+					self.current_quantity_b = (1000000 - 1000000/(1 + math.exp(-(1/15000)*(price_b[i_3]-40000))))
+					self.current_vc_b = 35000
+					if self.current_quantity_a + self.current_quantity_b <= factory_number[i_1] * self.capacity_one:
+						self.current_profit = self.current_quantity_a*price_a[i_2] + self.current_quantity_b*price_b[i_3] - self.current_vc_a*self.current_quantity_a - self.current_vc_b*self.current_quantity_b - 2000000000*factory_number[i_1]
 						self.quantity_a.append(self.current_quantity_a)
 						self.quantity_b.append(self.current_quantity_b)
 						self.profit.append(self.current_profit)
@@ -121,10 +152,17 @@ class Optimisation:
 		plt.close()
 
 	def exec(self):
-		self.grid_search()
-		self.result_display()
-		self.data_visualisation()
+		if not self.fixed_vc:
+			self.grid_search()
+			self.result_display()
+			self.data_visualisation()
+		if self.fixed_vc:
+			self.grid_search_fixed_vc()
+			self.result_display()
 
 if __name__ == '__main__':
-	obj = Optimisation(capacity_one, fixed_cost, price_a, price_b, factory_number)
+	obj = Optimisation(capacity_one, fixed_cost, price_a, price_b, factory_number, fixed_vc = False)
 	obj.exec()
+
+	obj_fixed_vc = Optimisation(capacity_one, fixed_cost, price_a, price_b, factory_number, fixed_vc = True)
+	obj_fixed_vc.exec()
