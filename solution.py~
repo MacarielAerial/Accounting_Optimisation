@@ -16,8 +16,8 @@ fixed_cost = 2000000000
 
 # Define search ranges
 factory_number = [1, 2, 3]
-price_a = list(range(10000, 100000, 10000))
-price_b = list(range(10000, 100000, 10000))
+price_a = list(range(10000, 100000, 5000))
+price_b = list(range(10000, 100000, 5000))
 
 class Optimisation:
 	'''
@@ -37,11 +37,7 @@ class Optimisation:
 		self.current_quantity_b = 0
 		self.price_a_history = []
 		self.price_b_history = []
-		self.capacity_history = []
 		self.df = pd.DataFrame()
-		self.df_1 = pd.DataFrame()
-		self.df_2 = pd.DataFrame()
-		self.df_3 = pd.DataFrame()
 
 	def grid_search(self):
 		'''Calculate all viable solutions given ranges of input'''
@@ -62,10 +58,9 @@ class Optimisation:
 						self.quantity_a.append(0)
 						self.quantity_b.append(0)
 						self.profit.append(0)
-					self.capacity_history.append(factory_number[i_1])
 					self.price_a_history.append(self.price_a[i_2])
 					self.price_b_history.append(self.price_b[i_3])
-		self.df = pd.DataFrame({'Price_Model_A':self.price_a_history, 'Price_Model_B':self.price_b_history, 'Profit':self.profit, 'Capacity':self.capacity_history}, dtype = float)
+		self.df = pd.DataFrame([self.profit, self.price_a_history, self.price_b_history], columns = ['Profit', 'Price_Model_A', 'Price_Model_B'], dtype = float)
 
 	def result_display(self):
 		'''Display optimal opearting parameters and the consequent profit'''
@@ -85,40 +80,9 @@ class Optimisation:
 
 	def data_visualisation(self):
 		'''Visualise the relationship between operating profit and prices of both models'''
-		self.df_1 = self.df.loc[(self.df['Profit'] != 0) & (self.df['Capacity'] == 1),:]
-		self.df_1.drop('Capacity', axis = 1, inplace = True)
-		self.df_1 = pd.pivot_table(self.df_1, values = 'Profit', index = ['Price_Model_A'], columns = 'Price_Model_B')
-		self.df_1 = self.df_1.loc[:,::-1]
-		plt.figure(figsize = (16,9))
 		sns.set(style = 'darkgrid')
-		sns.heatmap(self.df_1, cmap = 'OrRd', vmin = 0, vmax = 7000000000)
-		plt.xlabel('Price of Model B')
-		plt.ylabel('Price of Model A')
-		plt.title('Profit Levels of Varying Prices for Model A and B with One Factory')
-		plt.savefig('Profitibility_Price_One_Factory.png', dpi = 300)
-		plt.close()
-
-		self.df_2 = self.df.loc[(self.df['Profit'] != 0) & (self.df['Capacity'] == 2),:].drop('Capacity', axis = 1)
-		self.df_2 = pd.pivot_table(self.df_2, values = 'Profit', index = ['Price_Model_A'], columns = 'Price_Model_B')
-		self.df_2 = self.df_2.loc[:,::-1]
-		plt.figure(figsize = (16,9))
-		sns.heatmap(self.df_2, cmap = 'OrRd', vmin = 0, vmax = 7000000000)
-		plt.xlabel('Price of Model B')
-		plt.ylabel('Price of Model A')
-		plt.title('Profit Levels of Varying Prices for Model A and B with Two Factory')
-		plt.savefig('Profitibility_Price_Two_Factory.png', dpi = 300)
-		plt.close()
-
-		self.df_3 = self.df.loc[(self.df['Profit'] != 0) & (self.df['Capacity'] == 3),:].drop('Capacity', axis = 1)
-		self.df_3 = pd.pivot_table(self.df_3, values = 'Profit', index = ['Price_Model_A'], columns = 'Price_Model_B')
-		self.df_3 = self.df_3.loc[:,::-1]
-		plt.figure(figsize = (16,9))
-		sns.heatmap(self.df_3, cmap = 'RdBu_r', center = 0)
-		plt.xlabel('Price of Model B')
-		plt.ylabel('Price of Model A')
-		plt.title('Profit Levels of Varying Prices for Model A and B with Three Factory')
-		plt.savefig('Profitibility_Price_Three_Factory.png', dpi = 300)
-		plt.close()
+		sns.heatmap(self.df, vmin = 0, vmax = 1)
+		plt.savefig('Plot.png', dpi = 300)
 
 	def exec(self):
 		self.grid_search()
