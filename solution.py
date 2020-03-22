@@ -52,7 +52,7 @@ class Optimisation:
 			for i_2 in range(len(price_a)):
 				for i_3 in range(len(price_b)):
 					self.current_quantity_a = (1000000 - 1000000/(1 + math.exp(-(1/15000)*(price_a[i_2]-50000))))
-					self.current_vc_a = (56000 - 5600/(1 + math.exp(1-(1/10000)*(self.current_quantity_a - 50000))))
+					self.current_vc_a = (56000 - 5600/(1 + math.exp(-(1/10000)*(self.current_quantity_a - 50000))))
 					self.current_quantity_b = (1000000 - 1000000/(1 + math.exp(-(1/15000)*(price_b[i_3]-40000))))
 					self.current_vc_b = (35000 - 3500/(1 + math.exp(-(1/20000)*(self.current_quantity_b - 100000))))
 					if self.current_quantity_a + self.current_quantity_b <= factory_number[i_1] * self.capacity_one:
@@ -149,6 +149,18 @@ class Optimisation:
 		plt.ylabel('Price of Model A')
 		plt.title('Profit Levels of Varying Prices for Model A and B with Three Factory')
 		plt.savefig('Profitibility_Price_Three_Factory.png', dpi = 300)
+		plt.close()
+
+		self.df = self.df.loc[self.df['Profit'] != 0,:]
+		self.df.drop('Capacity', axis = 1, inplace = True)
+		self.df = pd.pivot_table(self.df, values = 'Profit', index = ['Price_Model_A'], columns = 'Price_Model_B')
+		self.df = self.df.loc[:,::-1]
+		plt.figure(figsize = (16,9))
+		sns.heatmap(self.df, cmap = 'RdBu_r', center = 0)
+		plt.xlabel('Price of Model B')
+		plt.ylabel('Price of Model A')
+		plt.title('Profit Levels of Varying Prices for Model A and B without Factory Number Constraint')
+		plt.savefig('Profitibility_Price_All_Factory.png', dpi = 300)
 		plt.close()
 
 	def exec(self):
