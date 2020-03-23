@@ -91,9 +91,9 @@ class Optimisation:
 							self.best_params = [factory_number[i_1], price_a[i_2], price_b[i_3], self.current_quantity_a, self.current_quantity_b]
 							self.best_profit = self.current_profit
 					else:
-						self.quantity_a.append(0)
-						self.quantity_b.append(0)
-						self.profit.append(0)
+						self.quantity_a.append(self.current_quantity_a)
+						self.quantity_b.append(self.current_quantity_b)
+						self.profit.append(np.nan)
 					self.capacity_history.append(factory_number[i_1])
 					self.price_a_history.append(self.price_a[i_2])
 					self.price_b_history.append(self.price_b[i_3])
@@ -121,7 +121,7 @@ class Optimisation:
 
 	def data_visualisation(self):
 		'''Visualise the relationship between operating profit and prices of both models'''
-		self.df_1 = self.df.loc[(self.df['Profit'] != 0) & (self.df['Capacity'] == 1),:]
+		self.df_1 = self.df.loc[(self.df['Profit'].notna()) & (self.df['Capacity'] == 1),:]
 		self.df_1.drop('Capacity', axis = 1, inplace = True)
 		self.df_1 = pd.pivot_table(self.df_1, values = 'Profit', index = ['Price_Model_A'], columns = 'Price_Model_B')
 		self.df_1 = self.df_1.loc[:,::-1]
@@ -134,7 +134,7 @@ class Optimisation:
 		plt.savefig('Profitibility_Price_One_Factory.png', dpi = 300)
 		plt.close()
 
-		self.df_2 = self.df.loc[(self.df['Profit'] != 0) & (self.df['Capacity'] == 2),:].drop('Capacity', axis = 1)
+		self.df_2 = self.df.loc[(self.df['Profit'].notna()) & (self.df['Capacity'] == 2),:].drop('Capacity', axis = 1)
 		self.df_2 = pd.pivot_table(self.df_2, values = 'Profit', index = ['Price_Model_A'], columns = 'Price_Model_B')
 		self.df_2 = self.df_2.loc[:,::-1]
 		plt.figure(figsize = (16,9))
@@ -145,7 +145,7 @@ class Optimisation:
 		plt.savefig('Profitibility_Price_Two_Factory.png', dpi = 300)
 		plt.close()
 
-		self.df_3 = self.df.loc[(self.df['Profit'] != 0) & (self.df['Capacity'] == 3),:].drop('Capacity', axis = 1)
+		self.df_3 = self.df.loc[(self.df['Profit'].notna()) & (self.df['Capacity'] == 3),:].drop('Capacity', axis = 1)
 		self.df_3 = pd.pivot_table(self.df_3, values = 'Profit', index = ['Price_Model_A'], columns = 'Price_Model_B')
 		self.df_3 = self.df_3.loc[:,::-1]
 		plt.figure(figsize = (16,9))
@@ -156,7 +156,7 @@ class Optimisation:
 		plt.savefig('Profitibility_Price_Three_Factory.png', dpi = 300)
 		plt.close()
 
-		self.df = self.df.loc[self.df['Profit'] != 0,:]
+		self.df = self.df.loc[self.df['Profit'].notna(),:]
 		self.df.drop('Capacity', axis = 1, inplace = True)
 		self.df = pd.pivot_table(self.df, values = 'Profit', index = ['Price_Model_A'], columns = 'Price_Model_B')
 		self.df = self.df.loc[:,::-1]
