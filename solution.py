@@ -65,9 +65,9 @@ class Optimisation:
 							self.best_params = [factory_number[i_1], price_a[i_2], price_b[i_3], self.current_quantity_a, self.current_quantity_b]
 							self.best_profit = self.current_profit
 					else:
-						self.quantity_a.append(0)
-						self.quantity_b.append(0)
-						self.profit.append(0)
+						self.quantity_a.append(self.current_quantity_a)
+						self.quantity_b.append(self.current_quantity_b)
+						self.profit.append(np.nan)
 					self.capacity_history.append(factory_number[i_1])
 					self.price_a_history.append(self.price_a[i_2])
 					self.price_b_history.append(self.price_b[i_3])

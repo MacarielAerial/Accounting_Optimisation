@@ -1,15 +1,15 @@
 **********The highest level of profit is:**********
-6030885102.228312
+0
 The optimal number of factory is:
-2
+0
 The optimal price level for model A is:
-70000
+0
 The optimal price level for model B is:
-60000
+0
 The corresponding demand level for model A is:
-208608.52732604486
+0
 The corresponding demand level for model B is;
-208608.52732604486
+0
 ***************************************************
 **********The highest level of profit is:**********
 5032972399.304943
